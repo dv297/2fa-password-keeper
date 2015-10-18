@@ -1,0 +1,30 @@
+{
+    "manifest_version": 2,
+    "name": "2FA Password Keeper",
+    "version": "0.0.0",
+    "description": "Save all of your passwords in one place, and let them be protected by two factor authentication.",
+    "icons": {
+        "256": "img/icon.png"
+    },
+    "homepage_url": "http://cse.sc.edu/",
+    "browser_action": {
+        "default_icon": "img/icon.png",
+        "default_title": "2FA Password Keeper",
+        "default_popup": "index.html"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "http://*/*",
+                "https://*/*"
+            ],
+            "js": [
+                "js/content.js"
+            ]
+        }
+    ],
+	"permissions": [
+        "http://*/*",
+        "https://*/*"
+	]
+}
