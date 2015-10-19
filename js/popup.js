@@ -6,7 +6,7 @@
 function generatePassword () {
     var number = Math.random() * 9999999999;
     var binary = number.toString(2);
-    var generatedPassword = CryptoJS.SHA512(binary);
+    var generatedPassword = CryptoJS.SHA512(binary).toString();
     document.getElementById("generatedPassword").textContent = generatedPassword;
 };
 

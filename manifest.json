@@ -4,7 +4,7 @@
     "version": "0.0.1",
     "description": "Save all of your passwords in one place, and let them be protected by two factor authentication.",
     "icons": {
-        "512": "img/icon.png"
+        "128": "img/icon.png"
     },
     "homepage_url": "http://cse.sc.edu/",
     "browser_action": {
