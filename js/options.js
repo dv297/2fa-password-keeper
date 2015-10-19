@@ -1,3 +1,4 @@
+// Save the options to local stroage
 function save_options(e) {
     e.preventDefault();
     var email = document.getElementById("email").value;
@@ -15,16 +16,18 @@ function save_options(e) {
     });
 };
 
+// Retrieve the options
 function restore_options(e) {
     e.preventDefault();
     chrome.storage.sync.get({
-        email: "",
-        phone: ""
+        email: "", // default
+        phone: "" // default
     }, function (items) {
         document.getElementById("email").value = items.email;
         document.getElementById("phone").value = items.phone;
     });
 }
 
+// Add listeners for the buttons and onLoad
 document.addEventListener("DOMContentLoaded", restore_options);
 document.getElementById("save").addEventListener("click", save_options);
