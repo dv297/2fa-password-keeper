@@ -18,29 +18,41 @@ function generatePassword () {
 **/
 function save () {
     var generatedPassword = document.getElementById("generatedPassword");
+    chrome.tabs.query({'active': true}, function (tabs) {
+        var url = tabs[0].url;
+        console.log(url);
+        var regex = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n]+)/;
+        var domain = url.replace(regex, "$1");
 
-    // TODO: Save to storage
+        // Save to storage
+        chrome.storage.sync.set({
+            url: url,
+            password: generatedPassword
+        }, function () {
+            
+            // Select the password and prepare to copy
+            var range = document.createRange();
+            range.selectNode(generatedPassword);
+            window.getSelection().addRange(range);
 
-    var range = document.createRange();
-    range.selectNode(generatedPassword);
-    window.getSelection().addRange(range);
+            try {
+                var isSuccessful = document.execCommand("copy");
+                if (isSuccessful) {
+                    // Relay the success to the UI
+                    var status = document.getElementById("status")
+                    var oldStatus = status.textContent;
+                    status.textContent = "Copied to clipboard!";
+                    setTimeout(function () {
+                        status.textContent = oldStatus;
+                    }, 2000);
+                }
+            } catch (exception) {
+                // Catch the error
+            }
 
-    try {
-        var isSuccessful = document.execCommand("copy");
-        if (isSuccessful) {
-            // Relay the success to the UI
-            var status = document.getElementById("status")
-            var oldStatus = status.textContent;
-            status.textContent = "Copied to clipboard!";
-            setTimeout(function () {
-                status.textContent = oldStatus;
-            }, 2000);
-        }
-    } catch (exception) {
-        // Catch the error
-    }
-
-    window.getSelection().removeAllRanges();
+            window.getSelection().removeAllRanges();
+        });
+    });
 }
 
 // Generate it the first time
