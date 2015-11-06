@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+    <head>
+        <title>2FA Password Keeper</title>
+
+        <!-- Base CSS -->
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-MfvZlkHCEqatNoGiOXveE8FIwMzZg4W85qfrfIFBfYc= sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+        <link href="css/main.css" rel="stylesheet">
+        <link href="css/popup.css" rel="stylesheet">
+
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h3 id="status">Two-Factor Authentication</h3>
+                </div>
+            </div>
+            <div id="retrieve" class="row">
+                <div id="savedCredentials" class="col-xs-12">
+                    <h5>Use your master password to unlock your barcode.</h5>
+                    <form>
+                        <div class="form-group">
+                            <label for="masterPassword">Master Password</label>
+                            <input id="masterPassword" type="password" class="form-control input-lg" />
+                        </div>
+                        <button id="submitMasterPassword" class="btn btn-lg btn-success">Submit</button>
+                    </form>
+                </div>
+                <div id="qrcode" style="display: none;" class="col-xs-12">
+                    <hr />
+                </div>
+            </div>
+            <div id="create" class="row">
+                <div class="col-xs-12">
+                    <h5>Generated password</h5>
+                    <pre id="generatedPassword"></pre>
+                    <button id="save" class="btn btn-lg btn-success">Copy & Save For This Website</button>
+                    <button id="regenerate" class="btn btn-lg btn-warning">Regenerate</button>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="js/packages/jquery.min.js"></script>
+        <script type="text/javascript" src="js/packages/qrcode.min.js"></script>
+        <script type="text/javascript" src="js/packages/sha512.js"></script>
+        <script type="text/javascript" src="js/popup.js"></script>
+    </body>
+</html>
