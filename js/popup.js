@@ -78,8 +78,10 @@ function generateBarCode (e) {
 
             chrome.storage.sync.set(json, function () {
                 // Encrypt the pin with the app key
-                var encrypted = CryptoJS.AES.encrypt(pin, items.key);
+                var rkEncryptionKey = CryptoJS.enc.Base64.parse(items.key);
+                var rkEncryptionIv = CryptoJS.enc.Base64.parse('5D9r9ZVzEYYgha93/aUK2w==');
 
+                var encrypted = CryptoJS.AES.encrypt(pin, rkEncryptionKey, {mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7, iv: rkEncryptionIv});
                 // Decrypt the pin
                 //var decrypted = CryptoJS.AES.decrypt(encrypted, items.key);
                 //console.log(decrypted.toString(CryptoJS.enc.Utf8));
