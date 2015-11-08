@@ -2,11 +2,11 @@
 function save_options(e) {
     e.preventDefault();
     var masterPassword = document.getElementById("masterPassword").value;
+    var key = document.getElementById("key").value;
 
-    var key = "masterPassword";
-    var value = masterPassword;
     var json = {};
-    json[key] = value;
+    json["masterPassword"] = masterPassword;
+    json["key"] = key;
 
     chrome.storage.sync.set(json, function () {
         var status = document.getElementById("status");

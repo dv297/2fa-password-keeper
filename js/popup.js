@@ -1,23 +1,105 @@
 /***************************************************************
+ * Checks the pin with what we have storeed and shows the
+ * password if the pin is correct.
+**/
+function checkPin (e) {
+    e.preventDefault();
+
+    var submittedPin = document.getElementById("pin").value;
+
+    chrome.storage.sync.get(function (items) {
+
+        // Hash what the user submitted
+        var submittedPinHash = CryptoJS.SHA512(submittedPin).toString();
+
+        // Compare pins
+        if (items.pin === submittedPinHash) {
+            chrome.tabs.query({'active': true}, function (tabs) {
+                var url = tabs[0].url;
+                var regex = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n]+)/;
+                var domain = url.replace(regex, "$1");
+
+                // Display the password
+                document.getElementById("retrievedPassword").textContent = items[domain];
+                document.getElementById("passwordBox").style.display = "block";
+
+                // Hide the qr code and input field
+                document.getElementById("pinBox").style.display = "none";
+                document.getElementById("qrcodeBox").style.display = "none";
+
+            });
+        } else {
+            document.getElementById("retrievedPassword").textContent = "";
+            document.getElementById("passwordBox").style.display = "none";
+
+            // Relay the error to the UI
+            var status = document.getElementById("status")
+            var oldStatus = status.textContent;
+            status.textContent = "Not a valid pin.";
+            setTimeout(function () {
+                status.textContent = oldStatus;
+            }, 2000);
+        }
+    });
+};
+
+/***************************************************************
  * Generate a password by generating a random number, changing
  * to a string, creating a length 32 substring, then hashing it
  * with SHA512.
 **/
 function generateBarCode (e) {
     e.preventDefault();
-    var qrcode = document.getElementById("qrcode");
-    var submittedPasswordNode = document.getElementById("masterPassword");
-    var submittedPassword = submittedPasswordNode.value;
-    chrome.storage.sync.get("masterPassword", function (items) {
-        if (items.masterPassword === submittedPassword) {
-            // Clear the password;
-            submittedPasswordNode.value = "";
-            qrcode.style.display = "block";
 
-            // Generate pin
-            var code = new QRCode(document.getElementById("qrcode"), "Like a boss");
+    // DOM Nodes that we will need
+    var credentialsBox = document.getElementById("credentialsBox");
+    var pinBox = document.getElementById("pinBox");
+    var qrcodeBox = document.getElementById("qrcodeBox");
+
+    // User input
+    var submittedPassword = document.getElementById("masterPassword").value;
+
+    // Get the real password from storage
+    chrome.storage.sync.get(function (items) {
+        if (items.masterPassword === submittedPassword) {
+
+            // Create the pin
+            var pin = createPin(8);
+
+            console.log(pin);
+
+            // Hash the pin for local storage
+            var pinHash = CryptoJS.SHA512(pin).toString();
+
+            var json = {};
+            var key = "pin";
+            var value = pinHash;
+            json[key] = pinHash;
+
+            chrome.storage.sync.set(json, function () {
+                // Encrypt the pin with the app key
+                var encrypted = CryptoJS.AES.encrypt(pin, items.key);
+
+                // Decrypt the pin
+                //var decrypted = CryptoJS.AES.decrypt(encrypted, items.key);
+                //console.log(decrypted.toString(CryptoJS.enc.Utf8));
+
+                // Generate QR Code
+                var code = new QRCode(qrcodeBox, encrypted.toString());
+
+                // Clear the password
+                document.getElementById("masterPassword").value = "";
+
+                // Show the QR Code and the Pin Box
+                credentialsBox.style.display = "none";
+                pinBox.style.display = "block";
+                qrcodeBox.style.display = "block";
+            });
         } else {
-            qrcode.style.display = "none";
+            // Hide the QR Code and the Pin Box
+            crednetialsBox.style.dispaly = "block";
+            pinBox.style.display = "none";
+            qrcodeBox.style.display = "none";
         }
     });
 };
@@ -32,6 +114,16 @@ function generatePassword () {
     var binary = number.toString(2);
     var generatedPassword = CryptoJS.SHA512(binary).toString();
     document.getElementById("generatedPassword").textContent = generatedPassword;
+};
+
+function createPin (length) {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for( var i=0; i < length; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
 };
 
 /***************************************************************
@@ -107,3 +199,4 @@ manipulatePopup();
 document.getElementById("save").addEventListener("click", save);
 document.getElementById("regenerate").addEventListener("click", generatePassword);
 document.getElementById("submitMasterPassword").addEventListener("click", generateBarCode);
+document.getElementById("submitPin").addEventListener("click", checkPin);

@@ -18,7 +18,7 @@
                 </div>
             </div>
             <div id="retrieve" class="row">
-                <div id="savedCredentials" class="col-xs-12">
+                <div id="credentialsBox" class="col-xs-12">
                     <h5>Use your master password to unlock your barcode.</h5>
                     <form>
                         <div class="form-group">
@@ -28,8 +28,22 @@
                         <button id="submitMasterPassword" class="btn btn-lg btn-success">Submit</button>
                     </form>
                 </div>
-                <div id="qrcode" style="display: none;" class="col-xs-12">
+                <div id="qrcodeBox" style="display: none;" class="col-xs-12">
                     <hr />
+                </div>
+                <div id="pinBox" style="display: none;" class="col-xs-12">
+                    <hr />
+                    <form>
+                        <div class="form-group">
+                            <label for="pin">Pin</label>
+                            <input id="pin" type="password" class="form-control input-lg" />
+                        </div>
+                        <button id="submitPin" class="btn btn-lg btn-success">Submit</button>
+                    </form>
+                </div>
+                <div id="passwordBox" style="display: none;" class="col-xs-12">
+                    <hr />
+                    <pre id="retrievedPassword"></pre>
                 </div>
             </div>
             <div id="create" class="row">
@@ -43,6 +57,7 @@
         </div>
         <script type="text/javascript" src="js/packages/jquery.min.js"></script>
         <script type="text/javascript" src="js/packages/qrcode.min.js"></script>
+        <script type="text/javascript" src="js/packages/aes.js"></script>
         <script type="text/javascript" src="js/packages/sha512.js"></script>
         <script type="text/javascript" src="js/popup.js"></script>
     </body>
