@@ -65,9 +65,7 @@ function generateBarCode (e) {
 
             // Create the pin
             var pin = createPin(8);
-
             console.log(pin);
-
             // Hash the pin for local storage
             var pinHash = CryptoJS.SHA512(pin).toString();
 
@@ -78,16 +76,17 @@ function generateBarCode (e) {
 
             chrome.storage.sync.set(json, function () {
                 // Encrypt the pin with the app key
-                var rkEncryptionKey = CryptoJS.enc.Base64.parse(items.key);
-                var rkEncryptionIv = CryptoJS.enc.Base64.parse('5D9r9ZVzEYYgha93/aUK2w==');
+                var rkEncryptionKey = CryptoJS.enc.Base64.parse(items.key);              
+                
+                // Creates an initialization vector to send to the mobile device
+                var iv = CryptoJS.lib.WordArray.random(16);
+                var rkIv = CryptoJS.enc.Hex.stringify(iv);
+                
+                var encrypted = CryptoJS.AES.encrypt(pin, rkEncryptionKey, {mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7, iv: iv});
 
-                var encrypted = CryptoJS.AES.encrypt(pin, rkEncryptionKey, {mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7, iv: rkEncryptionIv});
-                // Decrypt the pin
-                //var decrypted = CryptoJS.AES.decrypt(encrypted, items.key);
-                //console.log(decrypted.toString(CryptoJS.enc.Utf8));
-
-                // Generate QR Code
-                var code = new QRCode(qrcodeBox, encrypted.toString());
+                // Generate QR Code, delimits the IV from the encrypted message using a colon
+                var qrText = rkIv + ":" + encrypted.toString();
+                var code = new QRCode(qrcodeBox, qrText);
 
                 // Clear the password
                 document.getElementById("masterPassword").value = "";
